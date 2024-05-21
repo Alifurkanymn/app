@@ -33,6 +33,7 @@ export default function Game() {
       setCounter(0);
     } else {
       setIsFinish(true);
+      
     }
   };
 
