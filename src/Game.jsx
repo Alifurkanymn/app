@@ -12,8 +12,6 @@ export default function Game() {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [isFinish, setIsFinish] = useState(false);
   const [counter, setCounter] = useState(0);
-  const [resetInterval, setResetInterval] = useState(null);
-  const [resetSecongInterval, setResetSecondInterval] = useState(null);
 
   useEffect(() => {
     setQuestion(QUESTIONS[index].question);
@@ -22,65 +20,43 @@ export default function Game() {
   }, [index]);
 
   const selectOption = (value) => {
-    console.log("aa", index);
-
     if (value === answer) {
-      setCorrectCount(correctCount + 1);
+      setCorrectCount((prev) => prev + 1);
     } else {
-      setWrongCount(wrongCount + 1);
+      setWrongCount((prev) => prev + 1);
     }
+
+    setSelectedOptions((prev) => [...prev, value]);
 
     if (index + 1 < QUESTIONS.length) {
-      setIndex(index + 1);
+      setIndex((prev) => prev + 1);
+      setCounter(0); // Reset counter when moving to next question
     } else {
       setIsFinish(true);
-      clearInterval(resetInterval);
-      clearInterval(resetSecongInterval);
     }
-    selectedOptions.push(value);
-    setSelectedOptions(selectedOptions);
-    clearInterval(resetInterval);
-    const newResetInterval = setInterval(() => {
-      setCounter(0);
-      console.log(index);
-      if (index + 1 < QUESTIONS.length) {
-        setIndex((prev) => prev + 1);
-        console.log(index);
-      } else {
-        setIsFinish(true);
-        clearInterval(resetInterval);
-        clearInterval(resetSecongInterval);
-      }
-    }, 4000);
-
-    setCounter(0);
-    setResetInterval(newResetInterval);
   };
 
   useEffect(() => {
     const secondInterval = setInterval(() => {
       setCounter((prev) => prev + 1);
     }, 1000);
-    setResetSecondInterval(secondInterval);
 
     const thirtySecondInterval = setInterval(() => {
-      setCounter(0);
-      console.log("aga", index);
       if (index + 1 < QUESTIONS.length) {
         setIndex((prev) => prev + 1);
+        setCounter(0); 
       } else {
         setIsFinish(true);
-        clearInterval(resetInterval);
-        clearInterval(resetSecongInterval);
+        clearInterval(secondInterval);
+        clearInterval(thirtySecondInterval);
       }
-    }, 4000);
-    setResetInterval(thirtySecondInterval);
+    }, 4000); 
 
     return () => {
       clearInterval(secondInterval);
       clearInterval(thirtySecondInterval);
     };
-  }, []);
+  }, [index]);
 
   return (
     <div>
@@ -93,13 +69,11 @@ export default function Game() {
       ) : (
         <div>
           <div>{question}</div>
-          {counter < 0
-            ? null
-            : options.map((value, index) => (
-                <button key={index} onClick={() => selectOption(value)}>
-                  {value}
-                </button>
-              ))}
+          {options.map((value, idx) => (
+            <button key={idx} onClick={() => selectOption(value)}>
+              {value}
+            </button>
+          ))}
           <div>{counter}</div>
         </div>
       )}
