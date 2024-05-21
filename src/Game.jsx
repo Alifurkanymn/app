@@ -30,7 +30,7 @@ export default function Game() {
 
     if (index + 1 < QUESTIONS.length) {
       setIndex((prev) => prev + 1);
-      setCounter(0); // Reset counter when moving to next question
+      setCounter(0);
     } else {
       setIsFinish(true);
     }
